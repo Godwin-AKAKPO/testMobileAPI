@@ -7,7 +7,12 @@ import { swaggerSpec } from "./swagger.js";
 
 const app = express();
 
-app.use(cors());
+const corsOptions = {
+  origin: "*", // autorise toutes les origines
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use("/api/quotes", quoteRoutes);
@@ -16,3 +21,6 @@ app.use("/api/quotes", quoteRoutes);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 export default app;
+
+
+
