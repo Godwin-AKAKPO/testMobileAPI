@@ -121,7 +121,53 @@ router.post("/", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-
+/** * PUT /api/quotes/:id
+ */
+/**
+ * @swagger
+ * /api/quotes/{id}:
+ *   put:
+ *     summary: Mettre à jour une citation existante
+ *     tags: [Quotes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID de la citation à mettre à jour
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateQuote'
+ *     responses:
+ *       200:
+ *         description: Citation mise à jour
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Quote'
+ *       404:
+ *         description: Citation non trouvée
+ */ 
+router.put("/:id", async(req, res) => {
+    try {
+        const QuoteId = req.params.id;
+        const {text, author, category} = req.body;
+        const result = await pool.query(
+            "UPDATE quotes SET text=$1, author=$2, category=$3 WHERE id=$4 RETURNING *",
+            [text, author, category, QuoteId]
+        );
+        if(result.rows.length === 0){
+            return res.status(404).json({message : "Quote not found"})
+        }
+        res.json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({message : "Server Error"})        
+    }
+})
 export default router;
 /**
  * @swagger
